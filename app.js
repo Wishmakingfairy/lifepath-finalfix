@@ -1034,15 +1034,7 @@ function getUserTimezone() {
 function calculateCompatibility(userNumbers, item) {
   // Convert founding year to numerological value
   const foundingYear = item.foundingYear;
-  const foundingYearDigits = foundingYear
-    .toString()
-    .split("")
-    .map((d) => parseInt(d));
-  const foundingYearSum = foundingYearDigits.reduce(
-    (total, digit) => total + digit,
-    0
-  );
-  const foundingYearNumber = reduceToSingleDigit(foundingYearSum, true).value;
+  const foundingYearNumber = reduceToSingleDigit(foundingYear, true).value;
 
   // Calculate compatibility scores with different user numbers
   const scores = userNumbers.map((userNum) => {
