@@ -917,17 +917,27 @@ function getMoonSign(birthDate, birthTime, cityData, timezone) {
 
 // Enhanced rising sign calculation with accurate LST and house calculations
 function getRisingSign(birthDate, birthTime, cityData, timezone) {
-  if (!birthTime || !cityData) return null;
+  if (!birthDate || !birthTime || !cityData || !timezone) {
+    return null;
+  }
 
-  const date = new Date(birthDate + "T" + birthTime);
+  const DateTime = luxon.DateTime;
 
-  // Calculate Julian Day Number
-  const a = Math.floor((14 - (date.getMonth() + 1)) / 12);
-  const y = date.getFullYear() + 4800 - a;
-  const m = date.getMonth() + 1 + 12 * a - 3;
+  // 1. Create a DateTime in the target time zone
+  const dt = DateTime.fromISO(`${birthDate}T${birthTime}`, {
+    zone: timezone,
+  });
+
+  // 2. Convert to UTC JS Date for Julian day calculation
+  const date = dt.toUTC().toJSDate();
+
+  // === Julian Day calculation ===
+  const a = Math.floor((14 - (date.getUTCMonth() + 1)) / 12);
+  const y = date.getUTCFullYear() + 4800 - a;
+  const m = date.getUTCMonth() + 1 + 12 * a - 3;
 
   const jdn =
-    date.getDate() +
+    date.getUTCDate() +
     Math.floor((153 * m + 2) / 5) +
     365 * y +
     Math.floor(y / 4) -
@@ -935,8 +945,7 @@ function getRisingSign(birthDate, birthTime, cityData, timezone) {
     Math.floor(y / 400) -
     32045;
 
-  // Add time fraction
-  const timeDecimal = date.getHours() + date.getMinutes() / 60;
+  const timeDecimal = date.getUTCHours() + date.getUTCMinutes() / 60;
   const julianDay = jdn + timeDecimal / 24 - 0.5;
 
   // Days since J2000.0
@@ -1507,6 +1516,13 @@ function getFormData() {
   const birthTime = document.getElementById("birthTime");
   const birthPlace = document.getElementById("birthPlace");
 
+  const timezone =
+    citiesData.find(
+      (city) =>
+        city.name === selectedCity?.name &&
+        city.country === selectedCity?.country
+    )?.timezone || getUserTimezone();
+
   return {
     firstName: firstName ? firstName.value.trim() : "",
     middleName: middleName ? middleName.value.trim() : "",
@@ -1515,7 +1531,7 @@ function getFormData() {
     birthTime: birthTime ? birthTime.value : "",
     birthPlace: birthPlace ? birthPlace.value.trim() : "",
     cityData: selectedCity,
-    timezone: getUserTimezone(),
+    timezone,
   };
 }
 
@@ -1583,7 +1599,7 @@ function calculateEnhancedResults(formData) {
     formData.cityData,
     formData.timezone
   );
-
+  console.log("Rising sign", risingSign);
   // Lucky matches with performance optimization (top 50 limit)
   const userNumbers = [
     lifePath.value,
@@ -2361,7 +2377,7 @@ Follow @diana.noexcuses on TikTok for daily wisdom!`;
   if (astrology.moonSign) {
     doc.setFontSize(14);
     doc.setTextColor(162, 155, 254); // Purple from site
-    doc.text(`🌙 Moon Sign: ${astrology.moonSign}`, 20, yPos);
+    doc.text(`Moon Sign: ${astrology.moonSign}`, 20, yPos);
 
     doc.setFontSize(10);
     doc.setTextColor(80, 80, 80);
@@ -2375,7 +2391,7 @@ Follow @diana.noexcuses on TikTok for daily wisdom!`;
   if (astrology.risingSign) {
     doc.setFontSize(14);
     doc.setTextColor(78, 205, 196); // Teal from site
-    doc.text(`🌅 Rising Sign: ${astrology.risingSign}`, 20, yPos);
+    doc.text(`Rising Sign: ${astrology.risingSign}`, 20, yPos);
 
     doc.setFontSize(10);
     doc.setTextColor(80, 80, 80);
