@@ -1711,12 +1711,6 @@ function updateNumerologyCards(numerology) {
                     <strong style="color: #a29bfe;">Personal Affirmation:</strong><br>
                     <span style="color: #f4e4bc; font-style: italic;">I embrace my ${meaning.trait.toLowerCase()} and use it to create positive change in my life and the lives of others.</span>
                 </div>
-                <div style="background: rgba(45, 27, 61, 0.8); padding: 12px; border-radius: 6px; border: 1px solid rgba(212, 175, 55, 0.2);">
-                    <strong style="color: #d4af37; font-size: 12px;">✓ VALIDATED CALCULATION</strong><br>
-                    <span style="color: #f4e4bc; font-size: 11px;">This ${
-                      card.type
-                    } number has been verified against 10,000+ test cases using proper numerology methods.</span>
-                </div>
             `;
     }
   });
